@@ -4,6 +4,7 @@ import sys
 
 import pygame
 
+
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
 GRID_SIZE = 20
@@ -51,6 +52,15 @@ class GameObject:
         """Заготовка метода отрисовки объекта."""
         pass
 
+    def draw_cell(self, position):
+        """Отрисовывает одну ячейку игрового поля."""
+        rect = pygame.Rect(
+            position,
+            (GRID_SIZE, GRID_SIZE)
+        )
+        pygame.draw.rect(screen, self.body_color, rect)
+        pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+
 
 class Apple(GameObject):
     """Класс яблока."""
@@ -70,12 +80,7 @@ class Apple(GameObject):
 
     def draw(self):
         """Отрисовывает яблоко."""
-        rect = pygame.Rect(
-            self.position,
-            (GRID_SIZE, GRID_SIZE)
-        )
-        pygame.draw.rect(screen, self.body_color, rect)
-        pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+        self.draw_cell(self.position)
 
 
 class Snake(GameObject):
@@ -84,12 +89,8 @@ class Snake(GameObject):
     def __init__(self):
         """Инициализирует змейку."""
         super().__init__()
-        self.length = 1
-        self.positions = [self.position]
-        self.direction = RIGHT
-        self.next_direction = None
         self.body_color = SNAKE_COLOR
-        self.last = None
+        self.reset()
 
     def update_direction(self):
         """Обновляет направление движения змейки."""
@@ -117,22 +118,17 @@ class Snake(GameObject):
     def draw(self):
         """Отрисовывает змейку и стирает её последний сегмент."""
         for position in self.positions:
-            rect = pygame.Rect(
-                position,
-                (GRID_SIZE, GRID_SIZE)
-            )
-            pygame.draw.rect(screen, self.body_color, rect)
-            pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+            self.draw_cell(position)
 
         if self.last is not None:
-            last_rect = pygame.Rect(
+            rect = pygame.Rect(
                 self.last,
                 (GRID_SIZE, GRID_SIZE)
             )
             pygame.draw.rect(
                 screen,
                 BOARD_BACKGROUND_COLOR,
-                last_rect
+                rect
             )
             self.last = None
 
